@@ -20,9 +20,13 @@ func New(hour, minute int) Clock {
 	hour = hour % 24
 	minute = minute % 60
 
-	//fmt.Println("hour:", hour, " minute:", minute)
+	// Check and fix if the hour is negative
+	fixNegativeHours(&hour)
 
-	return Clock{hour % 24, minute}
+	// Check and fix if the minute is negative
+	fixNegativeMins(&minute, &hour)
+
+	return Clock{hour, minute}
 }
 
 func (c Clock) String() string {
@@ -30,15 +34,32 @@ func (c Clock) String() string {
 }
 
 func (c Clock) Add(minutes int) Clock {
-	// Check if the current time's minute and the minutes is greater than 59
-	if c.Minute+minutes > 59 {
-		//  Increment the hour
-		c.Hour++
+	// Add the total minutes
+	minutes = c.Minute + minutes
+	hours := (c.Hour + minutes/60)
 
-		c.Minute = minutes + c.Minute - 60
-	} else {
-		c.Minute += minutes
-	}
+	// Check and fix if the minute is negative
+	fixNegativeMins(&minutes, &hours)
 
+	// Check and fix if the hour is negative
+	fixNegativeHours(&hours)
+
+	c.Hour = hours % 24
+	c.Minute = minutes % 60
 	return c
+}
+
+// Check and fix if the hour is negative
+func fixNegativeHours(hour *int) {
+	if *hour < 0 {
+		*hour = (24 + *hour) % 24
+	}
+}
+
+// Check and fix if the minute is negative
+func fixNegativeMins(minutes *int, hours *int) {
+	if *minutes < 0 {
+		*minutes = 60 + *minutes%60
+		*hours--
+	}
 }
