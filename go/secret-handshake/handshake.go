@@ -1,9 +1,5 @@
 package secret
 
-import "fmt"
-
-var p = fmt.Println
-
 func Handshake(number int) []string {
 	var returnString []string
 
